@@ -50,7 +50,7 @@ class DioInstance {
     CancelToken? cancelToken,
   }) async {
     return _dio.get(
-      service + path,
+      path,
       queryParameters: param,
       data: data,
       cancelToken: cancelToken,
@@ -65,7 +65,6 @@ class DioInstance {
 
   /// post请求
   Future<Response> post({
-    required String service,
     required String path,
     Object? data,
     Map<String, dynamic>? param,
@@ -73,7 +72,7 @@ class DioInstance {
     CancelToken? cancelToken,
   }) async {
     return await _dio.post(
-      service + path,
+      path,
       queryParameters: param,
       data: data,
       cancelToken: cancelToken,

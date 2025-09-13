@@ -1,28 +1,50 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:teaching_evaluation_app/http/base_response.dart';
+import 'package:teaching_evaluation_app/http/business_exception.dart';
+import 'package:teaching_evaluation_app/http/http_constant.dart';
+import 'package:teaching_evaluation_app/utils/log_util.dart';
 import 'package:teaching_evaluation_app/utils/toast_util.dart';
 
 class ResponseInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // 统一处理业务状态码（非 HTTP 状态码）
     final data = response.data;
-    if (data is Map && data.containsKey('code')) {
-      final code = data['code'];
-      final message = data['message'];
-      // 异常返回
-      if (code != 200) {
-        print('errorCode: $code');
-        print('message: $message');
-        // 使用全局 navigatorKey 显示 Toast
+
+    if (data is Map && data.containsKey('BaseResp')) {
+      LogUtils.println(data.toString());
+      BaseResp baseResp = BaseResp.fromJson(data['BaseResp']);
+      final message = baseResp.statusMessage;
+      // 判断业务状态码
+      if (baseResp.statusCode != HttpConstant.successCode) {
         ToastUtils.showErrorMsg(message);
+
+        // 直接抛出业务异常
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            error: BusinessException(message, baseResp.statusCode),
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
+        return;
       }
     }
+
+    // 正常返回
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (err.error is BusinessException) {
+      final be = err.error as BusinessException;
+      ToastUtils.showErrorMsg(be.message);
+      debugPrint("业务异常: ${be.message}, code=${be.statusCode}");
+      return;
+    }
+
     String errorMessage = "请检查网络";
     if (err.type == DioExceptionType.connectionTimeout ||
         err.type == DioExceptionType.receiveTimeout ||
@@ -37,7 +59,7 @@ class ResponseInterceptor extends Interceptor {
     }
     ToastUtils.showErrorMsg(errorMessage);
     debugPrint(errorMessage);
-    // 使用handler.next继续传递错误
-    return handler.next(err);
+
+    handler.next(err); // 保持错误继续传递
   }
 }

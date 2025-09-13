@@ -32,7 +32,7 @@ class ToastUtils {
           size: 20.r,
         ),
         title: Text(
-          message ?? '请求成功',
+          message,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
       ),
@@ -54,7 +54,7 @@ class ToastUtils {
           size: 20.r,
         ),
         title: Text(
-          message ?? '请求失败',
+          message,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
       ),
@@ -76,7 +76,7 @@ class ToastUtils {
           size: 20.r,
         ),
         title: Text(
-          message ?? '请求成功',
+          message,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
         ),
       ),

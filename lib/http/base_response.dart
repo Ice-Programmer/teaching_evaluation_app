@@ -1,22 +1,26 @@
-class BaseResponse<T> {
-  int code;
-  T? data;
-  String message;
-  bool success;
+class BaseResp {
+  final String statusMessage;
+  final int statusCode;
+  final Map<String, String>? extra;
 
-  BaseResponse({
-    required this.code,
-    this.data,
-    required this.message,
-    required this.success,
-  });
+  BaseResp({required this.statusMessage, required this.statusCode, this.extra});
 
-  factory BaseResponse.fromJson(Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
-    return BaseResponse<T>(
-      code: json['code'],
-      data: json['data'] != null ? fromJsonT(json['data']) : null,
-      message: json['message'],
-      success: json['success'],
+  factory BaseResp.fromJson(Map<String, dynamic> json) {
+    return BaseResp(
+      statusMessage: json['StatusMessage'],
+      statusCode: json['StatusCode'],
+      extra:
+          json['Extra'] != null
+              ? Map<String, String>.from(json['Extra'])
+              : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'StatusMessage': statusMessage,
+      'StatusCode': statusCode,
+      'Extra': extra,
+    };
   }
 }
