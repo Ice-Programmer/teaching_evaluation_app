@@ -18,8 +18,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: "/login",
       name: "登录页",
-      pageBuilder:
-          (context, state) => const NoTransitionPage(child: LoginPage()),
+      pageBuilder: (context, state) => NoTransitionPage(child: LoginPage()),
     ),
   ],
 );
