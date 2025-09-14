@@ -9,6 +9,18 @@ class PrintLogInterceptor extends InterceptorsWrapper {
     RequestInterceptorHandler handler,
   ) async {
     // 打印请求信息，方便调试
+
+    // 添加 token 值
+    String path = options.uri.path;
+    if (!path.contains('/user/login')) {
+      String? token = await StoreUtil.getToken();
+      if (token != null) {
+        // 添加 Token 到请求头
+        LogUtils.println("添加 token 值: $token");
+        options.headers['Authorization'] = token;
+      }
+    }
+
     LogUtils.println("\nonRequest-------------->");
     options.headers.forEach((key, value) {
       LogUtils.println("headers: key=$key  value=${value.toString()}");
@@ -18,17 +30,6 @@ class PrintLogInterceptor extends InterceptorsWrapper {
     LogUtils.println("data: ${options.data}");
     LogUtils.println("queryParameters: ${options.queryParameters.toString()}");
     LogUtils.println("<--------------onRequest\n");
-
-    // 添加 token 值
-    String path = options.uri.path;
-    if (!path.contains('/forum-auth/auth/login')) {
-      String? token = await StoreUtil.getToken();
-      if (token != null) {
-        // 添加 Token 到请求头
-        LogUtils.println("添加 token 值: $token");
-        options.headers['Authorization'] = token;
-      }
-    }
     super.onRequest(options, handler);
   }
 
