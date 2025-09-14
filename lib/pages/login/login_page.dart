@@ -39,8 +39,8 @@ class LoginPage extends StatelessWidget {
           "学评教系统",
           style: TextStyle(
             fontSize: 35.sp,
-            color: Theme.of(context).primaryColor,
-            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ],

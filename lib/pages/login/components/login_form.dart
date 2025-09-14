@@ -23,7 +23,7 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [_getLoginForm(), 50.verticalSpace, _getLoginButton(context)],
+      children: [_getLoginForm(), 45.verticalSpace, _getLoginButton(context)],
     );
   }
 
@@ -34,8 +34,8 @@ class LoginForm extends StatelessWidget {
         children: [
           // 账号输入框
           CustomInput(
-            width: 350.w,
-            height: 60.h,
+            width: 300.sp,
+            height: 40.sp,
             hintText: "请输入账号",
             fontSize: 16.sp,
             onChanged:
@@ -52,8 +52,8 @@ class LoginForm extends StatelessWidget {
 
           // 密码输入框
           CustomInput(
-            width: 350.w,
-            height: 60.h,
+            width: 300.sp,
+            height: 40.sp,
             hintText: "请输入密码",
             isPassword: true,
             fontSize: 16.sp,
@@ -77,8 +77,8 @@ class LoginForm extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       textColor: Colors.white,
       isShadow: false,
-      btnWidth: 250.w,
-      btnHeight: 60.h,
+      btnWidth: 200.sp,
+      btnHeight: 40.sp,
       borderRadius: 30.r,
       fontSize: 20.sp,
     );
@@ -97,7 +97,7 @@ class LoginForm extends StatelessWidget {
 
     if (context.mounted) {
       if (userLoginResponse.userInfo!.role == UserRole.admin) {
-        context.go('/');
+        context.go('/admin/home');
       }
     }
   }
