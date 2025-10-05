@@ -37,55 +37,61 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: btnHeight,
       width: btnWidth,
-      decoration: BoxDecoration(
-        color: backgroundColor, // 背景颜色
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: borderColor != null ? Border.all(color: borderColor!) : null,
-        // border: Border.all(color: borderColor!),
-        boxShadow: (isShadow && backgroundColor != null)
-            ? [
-                BoxShadow(
-                  color: backgroundColor!.withOpacity(0.3),
-                  spreadRadius: 2.r, // 阴影扩散半径
-                  blurRadius: 5.r, // 模糊半径
-                  offset: Offset(0, 3.h), // 阴影偏移量
-                ),
-              ]
-            : [],
-      ),
-      child: MaterialButton(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: disable ? Colors.grey[400] : backgroundColor,
           borderRadius: BorderRadius.circular(borderRadius),
+          border: borderColor != null ? Border.all(color: borderColor!) : null,
+          boxShadow: (isShadow && backgroundColor != null)
+              ? [
+                  BoxShadow(
+                    color: backgroundColor!.withOpacity(0.3),
+                    spreadRadius: 2.r,
+                    blurRadius: 5.r,
+                    offset: Offset(0, 3.h),
+                  ),
+                ]
+              : [],
         ),
-        onPressed: onPressed,
-        color: backgroundColor,
-        elevation: 0,
-        highlightElevation: 0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null)
-              Icon(
-                icon,
-                color: textColor,
-                size: fontSize,
-              ),
-            if (iconGap != null) iconGap!.horizontalSpace,
-            if (title != null)
-              Text(
-                title!,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: fontWeight,
-                  color: textColor,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(borderRadius),
+            onTap: disable ? null : onPressed,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null)
+                      Icon(
+                        icon,
+                        color: textColor,
+                        size: fontSize,
+                      ),
+                    if (iconGap != null) iconGap!.horizontalSpace,
+                    if (title != null)
+                      Text(
+                        title!,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: fontWeight,
+                          color: textColor,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );

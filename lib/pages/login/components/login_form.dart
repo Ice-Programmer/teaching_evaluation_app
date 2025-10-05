@@ -23,7 +23,11 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [_getLoginForm(), 45.verticalSpace, _getLoginButton(context)],
+      children: [
+        _getLoginForm(),
+        SizedBox(height: 60.h),
+        _getLoginButton(context),
+      ],
     );
   }
 
@@ -34,10 +38,10 @@ class LoginForm extends StatelessWidget {
         children: [
           // 账号输入框
           CustomInput(
-            width: 300.sp,
-            height: 40.sp,
+            width: 260.w,
+            height: 60,
             hintText: "请输入账号",
-            fontSize: 16.sp,
+            fontSize: 18,
             onChanged:
                 (userAccount) => _userLoginRequest.userAccount = userAccount,
             validator: (value) {
@@ -48,15 +52,15 @@ class LoginForm extends StatelessWidget {
             },
           ),
 
-          30.verticalSpace,
+          SizedBox(height: 40.h),
 
           // 密码输入框
           CustomInput(
-            width: 300.sp,
-            height: 40.sp,
+            width: 260.w,
+            height: 60,
             hintText: "请输入密码",
             isPassword: true,
-            fontSize: 16.sp,
+            fontSize: 18,
             onChanged:
                 (userPassword) => _userLoginRequest.userPassword = userPassword,
             validator: (v) => (v == null || v.isEmpty) ? "请输入密码！" : null,
@@ -77,10 +81,10 @@ class LoginForm extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       textColor: Colors.white,
       isShadow: false,
-      btnWidth: 200.sp,
-      btnHeight: 40.sp,
-      borderRadius: 30.r,
-      fontSize: 20.sp,
+      btnWidth: 200,
+      btnHeight: 60,
+      borderRadius: 30,
+      fontSize: 20,
     );
   }
 

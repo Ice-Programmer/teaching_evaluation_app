@@ -21,7 +21,7 @@ class LoginPage extends StatelessWidget {
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [_getTitle(context), 50.verticalSpace, LoginForm()],
+              children: [_getTitle(context), SizedBox(height: 50), LoginForm()],
             ),
           ),
 
@@ -38,7 +38,7 @@ class LoginPage extends StatelessWidget {
         Text(
           "学评教系统",
           style: TextStyle(
-            fontSize: 35.sp,
+            fontSize: 30.sp,
             color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w900,
           ),

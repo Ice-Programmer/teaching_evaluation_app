@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// 自定义输入框
 class CustomInput extends StatefulWidget {
-  final double width;
+  final double? width;
   final double height;
   final double borderRadius;
   final String? hintText;
@@ -18,7 +18,7 @@ class CustomInput extends StatefulWidget {
 
   const CustomInput({
     super.key,
-    required this.width,
+    this.width,
     required this.height,
     this.borderRadius = 10,
     this.hintText,
@@ -55,11 +55,12 @@ class _CustomInputState extends State<CustomInput> {
           height: widget.height,
           width: widget.width,
           decoration: BoxDecoration(
-            color: widget.backgroundColor ?? Theme.of(context).colorScheme.secondary,
+            color:
+                widget.backgroundColor ??
+                Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            border: _hasError
-                ? Border.all(color: Colors.red, width: 1.5)
-                : null,
+            border:
+                _hasError ? Border.all(color: Colors.red, width: 1.5) : null,
           ),
           child: TextFormField(
             maxLines: widget.maxLines,
@@ -76,7 +77,8 @@ class _CustomInputState extends State<CustomInput> {
               isDense: true,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: widget.horizontalPadding,
-                vertical: (widget.height - widget.fontSize) / 2, // 动态计算垂直内边距使文本居中
+                vertical:
+                    (widget.height - widget.fontSize) / 2, // 动态计算垂直内边距使文本居中
               ),
               border: InputBorder.none,
               hintStyle: TextStyle(
@@ -93,7 +95,9 @@ class _CustomInputState extends State<CustomInput> {
                   widget.isPassword
                       ? IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility_off : Icons.visibility,
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           color: Theme.of(context).colorScheme.inversePrimary,
                         ),
                         onPressed: () {
@@ -102,7 +106,10 @@ class _CustomInputState extends State<CustomInput> {
                           });
                         },
                       )
-                      : null,
+                      : Icon(
+                        widget.prefixIcon,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
               // 完全移除错误样式的影响
               errorStyle: const TextStyle(height: 0, fontSize: 0),
               // 禁用错误文本容器
@@ -116,25 +123,24 @@ class _CustomInputState extends State<CustomInput> {
                   _hasError = error != null;
                   _errorMessage = error;
                 });
-                // 返回null，不使用Flutter内置的错误显示
                 return null;
               }
               return null;
             },
           ),
-         ),
-         if (_hasError && _errorMessage != null)
-           Padding(
-             padding: const EdgeInsets.only(top: 5.0, left: 10.0),
-             child: Text(
-               _errorMessage!,
-               style: TextStyle(
-                 color: Colors.red,
-                 fontSize: widget.fontSize * 0.8,
-               ),
-             ),
-           ),
-       ],
-     );
+        ),
+        if (_hasError && _errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0, left: 10.0),
+            child: Text(
+              _errorMessage!,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: widget.fontSize * 0.8,
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

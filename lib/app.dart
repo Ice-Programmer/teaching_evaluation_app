@@ -6,22 +6,6 @@ import 'package:teaching_evaluation_app/route/routes.dart';
 import 'package:teaching_evaluation_app/theme/dark_theme.dart';
 import 'package:teaching_evaluation_app/theme/theme_provider.dart';
 
-Size get designSize {
-  final firstView = WidgetsBinding.instance.platformDispatcher.views.first;
-  // 逻辑短边
-  final logicalShortestSize =
-      firstView.physicalSize.shortestSide / firstView.devicePixelRatio;
-  // 逻辑长边
-  final logicalLongestSize =
-      firstView.physicalSize.longestSide / firstView.devicePixelRatio;
-  // 缩放比例
-  const scaleFactor = 0.95;
-  return Size(
-    logicalShortestSize * scaleFactor,
-    logicalLongestSize * scaleFactor,
-  );
-}
-
 class App extends StatefulWidget {
   const App({super.key});
 
@@ -36,16 +20,35 @@ class _AppState extends State<App> {
     DioInstance.instance().initDio();
   }
 
+  Size _calcDesignSize(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final logicalShortestSize = mediaQuery.size.shortestSide;
+    final logicalLongestSize = mediaQuery.size.longestSide;
+    const scaleFactor = 0.95;
+    return Size(
+      logicalShortestSize * scaleFactor,
+      logicalLongestSize * scaleFactor,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: designSize,
-      builder: (context, child) {
-        return MaterialApp.router(
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          theme: Provider.of<ThemeProvider>(context, listen: true).themeData,
-          darkTheme: darkMode,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final designSize = _calcDesignSize(context);
+        return ScreenUtilInit(
+          designSize: designSize,
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return MaterialApp.router(
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              theme:
+                  Provider.of<ThemeProvider>(context, listen: true).themeData,
+              darkTheme: darkMode,
+            );
+          },
         );
       },
     );

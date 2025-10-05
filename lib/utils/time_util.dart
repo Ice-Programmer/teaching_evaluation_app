@@ -1,72 +1,42 @@
 import 'package:intl/intl.dart';
 
 class TimeUtil {
-  static String format(String dateTimeStr) {
+  /// 将 Unix 时间戳（秒 或 毫秒）转换为北京时间字符串
+  static String formatTimestamp(
+    int timestamp, {
+    String pattern = 'yyyy-MM-dd HH:mm:ss',
+  }) {
     try {
-      final DateTime parsedDate = DateTime.parse(dateTimeStr).toLocal();
-      final DateTime now = DateTime.now().toLocal();
-      final Duration difference = now.difference(parsedDate).abs();
-
-      final int seconds = difference.inSeconds;
-      final int minutes = difference.inMinutes;
-      final int hours = difference.inHours;
-      final int days = difference.inDays;
-
-      if (days >= 10) {
-        return DateFormat('yyyy-MM-dd HH:mm').format(parsedDate);
-      } else if (days >= 7) {
-        return '一周前';
-      } else if (days >= 1) {
-        return '$days天前';
-      } else if (hours >= 1) {
-        return '$hours小时前';
-      } else if (minutes >= 1) {
-        return '$minutes分钟前';
-      } else if (seconds >= 10) {
-        return '$seconds秒前';
-      } else {
-        return '刚刚';
+      // 判断是秒还是毫秒级时间戳
+      if (timestamp < 10000000000) {
+        timestamp *= 1000; // 如果是秒，转成毫秒
       }
+
+      // 转换为 UTC 时间后 +8小时变为北京时间
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(
+        timestamp,
+        isUtc: true,
+      ).add(const Duration(hours: 8));
+
+      // 使用 intl 格式化
+      final formatter = DateFormat(pattern);
+      return formatter.format(dateTime);
     } catch (e) {
-      return '无效时间';
+      return 'Invalid Time';
     }
   }
 
-  static String formatDateTime(String dateTimeStr) {
-    try {
-      final DateTime parsedDate = DateTime.parse(dateTimeStr).toLocal();
-      final DateTime now = DateTime.now().toLocal();
-      final Duration difference = now.difference(parsedDate).abs();
+  /// 获取当前时间（北京时间）
+  static DateTime nowBeijing() {
+    return DateTime.now().toUtc().add(const Duration(hours: 8));
+  }
 
-      final int minutes = difference.inMinutes;
-      final int hours = difference.inHours;
-      final int days = difference.inDays;
-
-      if (days >= 3 || parsedDate.year != now.year) {
-        // 超过3天或不在当前年份，显示具体日期
-        if (parsedDate.year != now.year) {
-          return DateFormat('yyyy年MM月dd日').format(parsedDate);
-        } else {
-          return DateFormat('MM月dd日').format(parsedDate);
-        }
-      } else if (days >= 2) {
-        // 超过48小时，显示几天前
-        return '$days天前';
-      } else if (days >= 1) {
-        // 超过24小时，显示“昨天 几小时前”
-        return '昨天 ${hours % 24}小时前';
-      } else if (hours >= 1) {
-        // 超过1小时，显示几小时前
-        return '$hours小时前';
-      } else if (minutes >= 5) {
-        // 超过5分钟，显示几分钟前
-        return '$minutes分钟前';
-      } else {
-        // 5分钟内显示“刚刚”
-        return '刚刚';
-      }
-    } catch (e) {
-      return '无效时间';
-    }
+  /// 将 DateTime 转换为北京时间字符串
+  static String formatDateTime(
+    DateTime dateTime, {
+    String pattern = 'yyyy-MM-dd HH:mm:ss',
+  }) {
+    final formatter = DateFormat(pattern);
+    return formatter.format(dateTime.toUtc().add(const Duration(hours: 8)));
   }
 }

@@ -75,11 +75,12 @@ class _AdminhomelayoutState extends State<AdminHomeLayout> {
       flex: 4,
       child: Container(
         color: const Color(0xFFEFEFEF),
-        padding: EdgeInsets.all(20.h),
+        padding: EdgeInsets.all(16.sp),
         child: Container(
           color: Colors.white, // PageView 内容区背景色（可选）
           child: PageView(
             controller: pageController,
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               StudentPage(),
               ClassPage(),
