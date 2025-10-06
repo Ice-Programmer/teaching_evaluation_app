@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:teaching_evaluation_app/http/dio_instance.dart';
 import 'package:teaching_evaluation_app/route/routes.dart';
@@ -47,6 +48,9 @@ class _AppState extends State<App> {
               theme:
                   Provider.of<ThemeProvider>(context, listen: true).themeData,
               darkTheme: darkMode,
+              builder: (context, child) {
+                return FlutterSmartDialog(child: child);
+              },
             );
           },
         );

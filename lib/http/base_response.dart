@@ -24,3 +24,17 @@ class BaseResp {
     };
   }
 }
+
+class SimpleResponse {
+  final BaseResp baseResp;
+
+  SimpleResponse({required this.baseResp});
+
+  factory SimpleResponse.fromJson(Map<String, dynamic> json) {
+    return SimpleResponse(baseResp: BaseResp.fromJson(json['BaseResp']));
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'BaseResp': baseResp.toJson()};
+  }
+}

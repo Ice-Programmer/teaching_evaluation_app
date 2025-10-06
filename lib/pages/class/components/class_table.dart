@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import 'package:teaching_evaluation_app/components/custom_button.dart';
 import 'package:teaching_evaluation_app/components/table_header_cell.dart';
 import 'package:teaching_evaluation_app/consts/page_const.dart';
 import 'package:teaching_evaluation_app/model/student_class/class_info.dart';
 import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_request.dart';
 import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_response.dart';
+import 'package:teaching_evaluation_app/pages/class/components/class_edit_btn.dart';
+import 'package:teaching_evaluation_app/pages/class/components/class_delete_btn.dart';
 import 'package:teaching_evaluation_app/service/class_service.dart';
 import 'package:teaching_evaluation_app/utils/time_util.dart';
 import 'package:teaching_evaluation_app/utils/toast_util.dart';
@@ -47,7 +48,10 @@ class _ClassTableState extends State<ClassTable> {
           .queryStudentClassList(_queryStudentClassRequest);
       classInfoList = response.classList;
       total = response.total;
-      classInfoDataSource = ClassInfoDataSource(classInfoData: classInfoList);
+      classInfoDataSource = ClassInfoDataSource(
+        classInfoData: classInfoList,
+        onUpdated: _loadClassList,
+      );
     } catch (e) {
       ToastUtils.showErrorMsg("获取课程列表失败");
     } finally {
@@ -94,7 +98,12 @@ class _ClassTableState extends State<ClassTable> {
 }
 
 class ClassInfoDataSource extends DataGridSource {
-  ClassInfoDataSource({required List<ClassInfo> classInfoData}) {
+  final VoidCallback onUpdated;
+
+  ClassInfoDataSource({
+    required List<ClassInfo> classInfoData,
+    required this.onUpdated,
+  }) {
     _classInfoData =
         classInfoData
             .map<DataGridRow>(
@@ -137,31 +146,15 @@ class ClassInfoDataSource extends DataGridSource {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomButton(
-                    textColor: Colors.white,
-                    btnWidth: 60,
-                    btnHeight: 36,
-                    borderRadius: 0,
-                    fontSize: 15,
-                    title: "编辑",
-                    isShadow: false,
-                    backgroundColor: const Color(0xFF1F41BB),
-                    onPressed: () => {},
+                  ClassEditBtn(
+                    defaultClassNumber: _getValueByName(row, "classNumber"),
+                    id: _getValueByName(row, "id"),
+                    onUpdated: onUpdated,
                   ),
 
                   10.horizontalSpace,
 
-                  CustomButton(
-                    textColor: Colors.white,
-                    btnWidth: 60,
-                    btnHeight: 36,
-                    borderRadius: 0,
-                    fontSize: 15,
-                    title: "删除",
-                    isShadow: false,
-                    backgroundColor: Colors.redAccent,
-                    onPressed: () => {},
-                  ),
+                  ClassDeleteBtn(),
                 ],
               );
             }
@@ -178,5 +171,13 @@ class ClassInfoDataSource extends DataGridSource {
             );
           }).toList(),
     );
+  }
+
+  String _getValueByName(DataGridRow row, String name) {
+    return row
+        .getCells()
+        .firstWhere((cell) => cell.columnName == name)
+        .value
+        .toString();
   }
 }

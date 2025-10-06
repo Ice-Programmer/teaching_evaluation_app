@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:teaching_evaluation_app/http/base_response.dart';
 import 'package:teaching_evaluation_app/http/business_exception.dart';
-import 'package:teaching_evaluation_app/http/http_constant.dart';
 import 'package:teaching_evaluation_app/utils/log_util.dart';
 import 'package:teaching_evaluation_app/utils/toast_util.dart';
 
@@ -15,21 +14,21 @@ class ResponseInterceptor extends Interceptor {
       LogUtils.println(data.toString());
       BaseResp baseResp = BaseResp.fromJson(data['BaseResp']);
       final message = baseResp.statusMessage;
-      // 判断业务状态码
-      if (baseResp.statusCode != HttpConstant.successCode) {
-        ToastUtils.showErrorMsg(message);
+      // // 判断业务状态码
+      // if (baseResp.statusCode != HttpConstant.successCode) {
+      //   ToastUtils.showErrorMsg(message);
 
-        // 直接抛出业务异常
-        handler.reject(
-          DioException(
-            requestOptions: response.requestOptions,
-            error: BusinessException(message, baseResp.statusCode),
-            response: response,
-            type: DioExceptionType.badResponse,
-          ),
-        );
-        return;
-      }
+      //   // 直接抛出业务异常
+      //   handler.reject(
+      //     DioException(
+      //       requestOptions: response.requestOptions,
+      //       error: BusinessException(message, baseResp.statusCode),
+      //       response: response,
+      //       type: DioExceptionType.badResponse,
+      //     ),
+      //   );
+      //   return;
+      // }
     }
 
     // 正常返回
@@ -38,28 +37,29 @@ class ResponseInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    // 先处理业务异常
     if (err.error is BusinessException) {
       final be = err.error as BusinessException;
-      ToastUtils.showErrorMsg(be.message);
-      debugPrint("业务异常: ${be.message}, code=${be.statusCode}");
-      return;
+      final msg = be.message;
+      ToastUtils.showErrorMsg(msg);
+      debugPrint("业务异常: $msg, code=${be.statusCode}");
+    } else {
+      // 网络异常
+      String errorMessage = "请检查网络";
+      if (err.type == DioExceptionType.connectionTimeout ||
+          err.type == DioExceptionType.sendTimeout) {
+        errorMessage = "连接超时，请检查网络连接";
+      } else if (err.type == DioExceptionType.receiveTimeout) {
+        errorMessage = "服务器响应超时，请稍后重试";
+      } else if (err.response?.statusCode == 404) {
+        errorMessage = "请求的资源不存在";
+      } else if (err.type == DioExceptionType.unknown) {
+        errorMessage = "未知错误，请重试";
+      }
+      ToastUtils.showErrorMsg(errorMessage);
+      debugPrint(errorMessage);
     }
 
-    String errorMessage = "请检查网络";
-    if (err.type == DioExceptionType.connectionTimeout ||
-        err.type == DioExceptionType.receiveTimeout ||
-        err.type == DioExceptionType.sendTimeout) {
-      errorMessage = "连接超时，请检查网络连接";
-    } else if (err.type == DioExceptionType.receiveTimeout) {
-      errorMessage = "服务器响应超时，请稍后重试";
-    } else if (err.response?.statusCode == 404) {
-      errorMessage = "请求的资源不存在";
-    } else if (err.type == DioExceptionType.unknown) {
-      errorMessage = "未知错误，请重试";
-    }
-    ToastUtils.showErrorMsg(errorMessage);
-    debugPrint(errorMessage);
-
-    handler.next(err); // 保持错误继续传递
+    handler.next(err); // 确保错误继续传递
   }
 }
