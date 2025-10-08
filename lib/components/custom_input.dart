@@ -41,7 +41,7 @@ class CustomInput extends StatefulWidget {
 }
 
 class _CustomInputState extends State<CustomInput> {
-  final bool _obscureText = true;
+  bool _obscureText = true;
   String? _errorMessage;
   final _fieldKey = GlobalKey<FormFieldState<String>>();
 
@@ -79,12 +79,31 @@ class _CustomInputState extends State<CustomInput> {
             ),
             decoration: InputDecoration(
               isDense: true,
+              isCollapsed: true,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: widget.horizontalPadding,
-                vertical: (widget.height - widget.fontSize) / 2,
               ),
               border: InputBorder.none,
               hintText: widget.hintText,
+              suffixIcon:
+                  widget.isPassword
+                      ? IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      )
+                      : Icon(
+                        widget.prefixIcon,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
               hintStyle: TextStyle(
                 fontSize: widget.fontSize,
                 color: Colors.grey,

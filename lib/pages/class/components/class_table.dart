@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:teaching_evaluation_app/components/table_header_cell.dart';
 import 'package:teaching_evaluation_app/consts/page_const.dart';
 import 'package:teaching_evaluation_app/model/student_class/class_info.dart';
 import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_request.dart';
 import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_response.dart';
+import 'package:teaching_evaluation_app/pages/class/class_data_vm.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_edit_btn.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_delete_btn.dart';
 import 'package:teaching_evaluation_app/service/class_service.dart';
@@ -20,62 +22,29 @@ class ClassTable extends StatefulWidget {
 }
 
 class _ClassTableState extends State<ClassTable> {
-  List<ClassInfo> classInfoList = [];
-  int total = 0;
-  int currentPageNum = PageConst.defaultPageNum;
-  int pageSize = PageConst.defaultPageSize;
-
-  ClassInfoDataSource? classInfoDataSource;
-  bool isLoading = true;
-
-  final ClassService _classService = ClassService();
-  final QueryStudentClassRequest _queryStudentClassRequest =
-      QueryStudentClassRequest(
-        pageNum: PageConst.defaultPageNum,
-        pageSize: PageConst.defaultPageSize,
-      );
-
-  @override
-  void initState() {
-    super.initState();
-    _loadClassList();
-  }
-
-  Future<void> _loadClassList() async {
-    setState(() => isLoading = true);
-    try {
-      QueryStudentClassResponse response = await _classService
-          .queryStudentClassList(_queryStudentClassRequest);
-      classInfoList = response.classList;
-      total = response.total;
-      classInfoDataSource = ClassInfoDataSource(
-        classInfoData: classInfoList,
-        onUpdated: _loadClassList,
-      );
-    } catch (e) {
-      ToastUtils.showErrorMsg("获取课程列表失败");
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    final vm = context.watch<ClassDataViewModel>();
+    if (vm.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (classInfoDataSource == null || classInfoList.isEmpty) {
+    if (vm.classInfoList.isEmpty) {
       return const Center(child: Text('暂无数据'));
     }
 
+    final dataSource = ClassInfoDataSource(
+      classInfoData: vm.classInfoList,
+      onUpdated: vm.refresh,
+    );
+
     return Expanded(
       child: SfDataGrid(
-        source: classInfoDataSource!,
+        source: dataSource!,
         columnWidthMode: ColumnWidthMode.fill,
         gridLinesVisibility: GridLinesVisibility.none,
         headerGridLinesVisibility: GridLinesVisibility.none,
-
+    
         onCellTap: (details) {},
         columns: [
           GridColumn(columnName: 'id', label: TableHeaderCell(title: 'ID')),
@@ -93,6 +62,45 @@ class _ClassTableState extends State<ClassTable> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPagination(BuildContext context, ClassDataViewModel vm) {
+    int totalPages =
+        (vm.total / vm.currentPageSize).ceil() == 0
+            ? 1
+            : (vm.total / vm.currentPageSize).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text('共 ${vm.total} 条'),
+        const SizedBox(width: 16),
+        DropdownButton<int>(
+          value: vm.currentPageSize,
+          items: const [
+            DropdownMenuItem(value: 10, child: Text('10条/页')),
+            DropdownMenuItem(value: 20, child: Text('20条/页')),
+            DropdownMenuItem(value: 50, child: Text('50条/页')),
+          ],
+          onChanged: (size) => vm.changePageSize(size!),
+        ),
+        IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed:
+              vm.currentPageNum > 1
+                  ? () => vm.goToPage(vm.currentPageNum - 1)
+                  : null,
+        ),
+        Text('${vm.currentPageNum} / $totalPages'),
+        IconButton(
+          icon: const Icon(Icons.chevron_right),
+          onPressed:
+              vm.currentPageNum < totalPages
+                  ? () => vm.goToPage(vm.currentPageNum + 1)
+                  : null,
+        ),
+      ],
     );
   }
 }
@@ -154,7 +162,10 @@ class ClassInfoDataSource extends DataGridSource {
 
                   10.horizontalSpace,
 
-                  ClassDeleteBtn(),
+                  ClassDeleteBtn(
+                    id: _getValueByName(row, "id"),
+                    onUpdated: onUpdated,
+                  ),
                 ],
               );
             }

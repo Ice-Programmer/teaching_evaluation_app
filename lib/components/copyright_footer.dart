@@ -8,7 +8,6 @@ class CopyrightFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      color: Colors.transparent,
       child: Text(
         '© ${DateTime.now().year} 杭电圣光机联合学院-网络技术培训中心 版权所有',
         style: TextStyle(

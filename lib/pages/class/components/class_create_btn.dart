@@ -3,57 +3,38 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:teaching_evaluation_app/components/custom_button.dart';
 import 'package:teaching_evaluation_app/components/custom_input.dart';
-import 'package:teaching_evaluation_app/model/student_class/edit/edit_student_class_request.dart';
+import 'package:teaching_evaluation_app/model/student_class/create/create_student_class_request.dart';
 import 'package:teaching_evaluation_app/service/class_service.dart';
 import 'package:teaching_evaluation_app/utils/toast_util.dart';
 
-class ClassEditBtn extends StatefulWidget {
-  final String id;
-  final String defaultClassNumber;
+class ClassCreateBtn extends StatefulWidget {
   final VoidCallback? onUpdated;
-
-  const ClassEditBtn({
-    super.key,
-    required this.defaultClassNumber,
-    required this.id,
-    this.onUpdated,
-  });
+  const ClassCreateBtn({super.key, this.onUpdated});
 
   @override
-  State<ClassEditBtn> createState() => _ClassEditBtnState();
+  State<ClassCreateBtn> createState() => _ClassCreateBtnState();
 }
 
-class _ClassEditBtnState extends State<ClassEditBtn> {
+class _ClassCreateBtnState extends State<ClassCreateBtn> {
   final _formKey = GlobalKey<FormState>();
-
   final ClassService _classService = ClassService();
-  late EditStudentClassRequest _editStudentClassRequest;
-
-  @override
-  void initState() {
-    super.initState();
-    _editStudentClassRequest = EditStudentClassRequest(
-      id: widget.id,
-      classNumber: widget.defaultClassNumber,
-    );
-  }
+  final CreateStudentClassRequest _createStudentClassRequest =
+      CreateStudentClassRequest();
 
   @override
   Widget build(BuildContext context) {
     return CustomButton(
       textColor: Colors.white,
-      btnWidth: 60,
-      btnHeight: 36,
-      borderRadius: 0,
-      fontSize: 15,
-      title: "编辑",
-      isShadow: false,
-      backgroundColor: const Color(0xFF1F41BB),
-      onPressed: () => _showEditDialog(context),
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      btnWidth: 80.w,
+      btnHeight: 75.h,
+      fontSize: 10.sp,
+      title: "添加班级",
+      onPressed: _showCreateDialog,
     );
   }
 
-  void _showEditDialog(BuildContext context) {
+  void _showCreateDialog() {
     SmartDialog.show(
       builder: (_) {
         return IntrinsicWidth(
@@ -64,7 +45,7 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20.r),
               ),
-              child: _buildEditModal(context),
+              child: _buildCreateModal(),
             ),
           ),
         );
@@ -72,13 +53,13 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
     );
   }
 
-  Future<void> _editStudentClass() async {
-    bool result = await _classService.editStudentClass(
-      _editStudentClassRequest,
+  Future<void> _createStudentClass() async {
+    bool result = await _classService.createStudentClass(
+      _createStudentClassRequest,
     );
     if (result) {
       SmartDialog.dismiss(force: true);
-      ToastUtils.showInfoMsg("更新班级信息成功");
+      ToastUtils.showInfoMsg("创建班级信息成功");
 
       if (widget.onUpdated != null) {
         widget.onUpdated!();
@@ -86,7 +67,7 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
     }
   }
 
-  Widget _buildEditModal(BuildContext context) {
+  Widget _buildCreateModal() {
     return SafeArea(
       minimum: EdgeInsets.all(20),
       child: Form(
@@ -95,7 +76,7 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "编辑班级",
+              "创建班级",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 10.sp,
@@ -119,7 +100,6 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
             CustomInput(
               height: 40,
               hintText: "请输入班级编号",
-              defaultValue: widget.defaultClassNumber,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "班级编号不能为空";
@@ -128,7 +108,7 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
               },
               borderColor: Colors.grey.withAlpha(100),
               onChanged: (value) {
-                _editStudentClassRequest.classNumber = value;
+                _createStudentClassRequest.classNumber = value;
               },
               backgroundColor: Colors.white,
             ),
@@ -159,11 +139,7 @@ class _ClassEditBtnState extends State<ClassEditBtn> {
                   btnHeight: 38,
                   fontSize: 12,
                   title: "确认",
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _editStudentClass();
-                    }
-                  },
+                  onPressed: _createStudentClass,
                 ),
               ],
             ),

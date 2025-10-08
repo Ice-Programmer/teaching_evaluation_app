@@ -2,9 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:popover/popover.dart';
 import 'package:teaching_evaluation_app/components/custom_button.dart';
+import 'package:teaching_evaluation_app/model/student_class/delete/delete_student_class_request.dart';
+import 'package:teaching_evaluation_app/service/class_service.dart';
+import 'package:teaching_evaluation_app/utils/toast_util.dart';
 
-class ClassDeleteBtn extends StatelessWidget {
-  const ClassDeleteBtn({super.key});
+class ClassDeleteBtn extends StatefulWidget {
+  final String id;
+  final VoidCallback? onUpdated;
+
+  const ClassDeleteBtn({super.key, required this.id, this.onUpdated});
+
+  @override
+  State<ClassDeleteBtn> createState() => _ClassDeleteBtnState();
+}
+
+class _ClassDeleteBtnState extends State<ClassDeleteBtn> {
+  final ClassService _classService = ClassService();
+  late DeleteStudentClassRequest _deleteStudentClassRequest;
+
+  @override
+  void initState() {
+    super.initState();
+    _deleteStudentClassRequest = DeleteStudentClassRequest(id: widget.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +49,20 @@ class ClassDeleteBtn extends StatelessWidget {
             ),
           },
     );
+  }
+
+  Future<void> _deleteStudentClass() async {
+    bool result = await _classService.deleteStudentClass(
+      _deleteStudentClassRequest,
+    );
+    if (!mounted) return;
+
+    if (result) {
+      Navigator.pop(context);
+      ToastUtils.showInfoMsg("删除班级信息成功");
+
+      widget.onUpdated?.call();
+    }
   }
 
   Widget _buildPopContent(BuildContext context) {
@@ -79,7 +113,7 @@ class ClassDeleteBtn extends StatelessWidget {
                     borderRadius: 2.r,
                     fontSize: 12,
                     title: "Yes",
-                    onPressed: () => {},
+                    onPressed: () => _deleteStudentClass(),
                   ),
                 ],
               ),

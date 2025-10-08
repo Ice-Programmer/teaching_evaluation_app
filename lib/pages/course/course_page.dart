@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -10,6 +10,8 @@ class CoursePage extends StatefulWidget {
 class _CoursePageState extends State<CoursePage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('课程管理'));
+    return Center(
+      child: Text('Course Page'),
+    );
   }
 }

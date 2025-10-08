@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:teaching_evaluation_app/components/custom_button.dart';
+import 'package:provider/provider.dart';
 import 'package:teaching_evaluation_app/components/custom_input.dart';
+import 'package:teaching_evaluation_app/pages/class/class_data_vm.dart';
+import 'package:teaching_evaluation_app/pages/class/components/class_create_btn.dart';
+import 'package:teaching_evaluation_app/pages/class/components/class_excel_import_btn.dart';
 
 class ClassHeader extends StatefulWidget {
   const ClassHeader({super.key});
@@ -13,11 +16,23 @@ class ClassHeader extends StatefulWidget {
 class _ClassHeaderState extends State<ClassHeader> {
   @override
   Widget build(BuildContext context) {
+    final vm = context.read<ClassDataViewModel>();
     return Row(
       children: [
         _buildSearchField(),
         40.horizontalSpace,
-        _buildButtons(context),
+        Expanded(
+          flex: 1,
+          child: Row(
+            children: [
+              Expanded(child: ClassCreateBtn(onUpdated: vm.refresh)),
+
+              10.horizontalSpace,
+
+              Expanded(child: ClassExcelImportBtn(onUpdated: vm.refresh)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -29,41 +44,6 @@ class _ClassHeaderState extends State<ClassHeader> {
         height: 75.h,
         hintText: "请输入班级名称或班级编号",
         prefixIcon: Icons.search,
-      ),
-    );
-  }
-
-  Widget _buildButtons(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: Row(
-        children: [
-          Expanded(
-            child: CustomButton(
-              textColor: Colors.white,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              btnWidth: 80.w,
-              btnHeight: 75.h,
-              fontSize: 8.sp,
-              title: "添加班级",
-              onPressed: () => {},
-            ),
-          ),
-
-          10.horizontalSpace,
-
-          Expanded(
-            child: CustomButton(
-              textColor: Colors.white,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              btnWidth: 80.w,
-              btnHeight: 75.h,
-              fontSize: 8.sp,
-              title: "Excel 导入",
-              onPressed: () => {},
-            ),
-          ),
-        ],
       ),
     );
   }

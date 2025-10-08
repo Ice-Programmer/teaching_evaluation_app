@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:teaching_evaluation_app/pages/class/class_data_vm.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_table.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_header.dart';
 
@@ -11,11 +13,24 @@ class ClassPage extends StatefulWidget {
 }
 
 class _ClassPageState extends State<ClassPage> {
+  final ClassDataViewModel _viewModel = ClassDataViewModel();
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel.fetchClassInfoList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      minimum: EdgeInsets.all(20.sp),
-      child: Column(children: [ClassHeader(), 40.verticalSpace, ClassTable()]),
+    return ChangeNotifierProvider.value(
+      value: _viewModel,
+      child: SafeArea(
+        minimum: EdgeInsets.all(20.sp),
+        child: Column(
+          children: [ClassHeader(), 40.verticalSpace, ClassTable()],
+        ),
+      ),
     );
   }
 }
