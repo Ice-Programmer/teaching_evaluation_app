@@ -14,7 +14,7 @@ class QueryStudentClassResponse {
 
   factory QueryStudentClassResponse.fromJson(Map<String, dynamic> json) {
     return QueryStudentClassResponse(
-      total: json['total'] ?? 0,
+      total: json['total'],
       classList:
           (json['classList'] as List<dynamic>?)
               ?.map((e) => ClassInfo.fromJson(e))

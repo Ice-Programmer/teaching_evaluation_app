@@ -12,10 +12,11 @@ class CustomInput extends StatefulWidget {
   final bool isPassword;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
-  final IconData? prefixIcon;
+  final IconData? suffixIcon;
   final double prefixGap;
   final String? defaultValue;
   final Color? borderColor;
+  final VoidCallback? onSuffixTap;
 
   const CustomInput({
     super.key,
@@ -30,10 +31,11 @@ class CustomInput extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.backgroundColor,
-    this.prefixIcon,
+    this.suffixIcon,
     this.prefixGap = 20,
     this.defaultValue,
     this.borderColor,
+    this.onSuffixTap,
   });
 
   @override
@@ -100,10 +102,7 @@ class _CustomInputState extends State<CustomInput> {
                           });
                         },
                       )
-                      : Icon(
-                        widget.prefixIcon,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
+                      : _buildSuffixButton(),
               hintStyle: TextStyle(
                 fontSize: widget.fontSize,
                 color: Colors.grey,
@@ -144,6 +143,27 @@ class _CustomInputState extends State<CustomInput> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildSuffixButton() {
+    if (widget.suffixIcon == null) {
+      return SizedBox(width: widget.height * 1.5);
+    }
+    return Material(
+      color: Theme.of(context).colorScheme.primary,
+      borderRadius: BorderRadius.horizontal(
+        right: Radius.circular(widget.borderRadius),
+      ),
+      child: InkWell(
+        onTap: widget.onSuffixTap,
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        child: SizedBox(
+          height: widget.height,
+          width: widget.height * 1.5,
+          child: Icon(widget.suffixIcon, color: Colors.white),
+        ),
+      ),
     );
   }
 }

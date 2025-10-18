@@ -3,16 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:teaching_evaluation_app/components/table_header_cell.dart';
-import 'package:teaching_evaluation_app/consts/page_const.dart';
 import 'package:teaching_evaluation_app/model/student_class/class_info.dart';
-import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_request.dart';
-import 'package:teaching_evaluation_app/model/student_class/query/query_student_class_response.dart';
 import 'package:teaching_evaluation_app/pages/class/class_data_vm.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_edit_btn.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_delete_btn.dart';
-import 'package:teaching_evaluation_app/service/class_service.dart';
+import 'package:teaching_evaluation_app/pages/class/components/class_table_skeleton.dart';
 import 'package:teaching_evaluation_app/utils/time_util.dart';
-import 'package:teaching_evaluation_app/utils/toast_util.dart';
 
 class ClassTable extends StatefulWidget {
   const ClassTable({super.key});
@@ -26,7 +22,7 @@ class _ClassTableState extends State<ClassTable> {
   Widget build(BuildContext context) {
     final vm = context.watch<ClassDataViewModel>();
     if (vm.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return ClassTableSkeleton();
     }
 
     if (vm.classInfoList.isEmpty) {
@@ -38,67 +34,26 @@ class _ClassTableState extends State<ClassTable> {
       onUpdated: vm.refresh,
     );
 
-    return Expanded(
-      child: SfDataGrid(
-        source: dataSource!,
-        columnWidthMode: ColumnWidthMode.fill,
-        gridLinesVisibility: GridLinesVisibility.none,
-        headerGridLinesVisibility: GridLinesVisibility.none,
-    
-        onCellTap: (details) {},
-        columns: [
-          GridColumn(columnName: 'id', label: TableHeaderCell(title: 'ID')),
-          GridColumn(
-            columnName: 'classNumber',
-            label: TableHeaderCell(title: '班级编号'),
-          ),
-          GridColumn(
-            columnName: 'createAt',
-            label: TableHeaderCell(title: '创建时间'),
-          ),
-          GridColumn(
-            columnName: 'operations',
-            label: TableHeaderCell(title: '操作'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPagination(BuildContext context, ClassDataViewModel vm) {
-    int totalPages =
-        (vm.total / vm.currentPageSize).ceil() == 0
-            ? 1
-            : (vm.total / vm.currentPageSize).ceil();
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text('共 ${vm.total} 条'),
-        const SizedBox(width: 16),
-        DropdownButton<int>(
-          value: vm.currentPageSize,
-          items: const [
-            DropdownMenuItem(value: 10, child: Text('10条/页')),
-            DropdownMenuItem(value: 20, child: Text('20条/页')),
-            DropdownMenuItem(value: 50, child: Text('50条/页')),
-          ],
-          onChanged: (size) => vm.changePageSize(size!),
+    return SfDataGrid(
+      source: dataSource,
+      shrinkWrapRows: true,
+      columnWidthMode: ColumnWidthMode.fill,
+      gridLinesVisibility: GridLinesVisibility.none,
+      headerGridLinesVisibility: GridLinesVisibility.none,
+      onCellTap: (details) {},
+      columns: [
+        GridColumn(columnName: 'id', label: TableHeaderCell(title: 'ID')),
+        GridColumn(
+          columnName: 'classNumber',
+          label: TableHeaderCell(title: '班级编号'),
         ),
-        IconButton(
-          icon: const Icon(Icons.chevron_left),
-          onPressed:
-              vm.currentPageNum > 1
-                  ? () => vm.goToPage(vm.currentPageNum - 1)
-                  : null,
+        GridColumn(
+          columnName: 'createAt',
+          label: TableHeaderCell(title: '创建时间'),
         ),
-        Text('${vm.currentPageNum} / $totalPages'),
-        IconButton(
-          icon: const Icon(Icons.chevron_right),
-          onPressed:
-              vm.currentPageNum < totalPages
-                  ? () => vm.goToPage(vm.currentPageNum + 1)
-                  : null,
+        GridColumn(
+          columnName: 'operations',
+          label: TableHeaderCell(title: '操作'),
         ),
       ],
     );

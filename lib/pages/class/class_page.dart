@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:teaching_evaluation_app/components/custom_pagination.dart';
 import 'package:teaching_evaluation_app/pages/class/class_data_vm.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_table.dart';
 import 'package:teaching_evaluation_app/pages/class/components/class_header.dart';
@@ -27,8 +28,25 @@ class _ClassPageState extends State<ClassPage> {
       value: _viewModel,
       child: SafeArea(
         minimum: EdgeInsets.all(20.sp),
-        child: Column(
-          children: [ClassHeader(), 40.verticalSpace, ClassTable()],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ClassHeader(),
+              20.verticalSpace,
+              ClassTable(),
+              20.verticalSpace,
+              Consumer<ClassDataViewModel>(
+                builder:
+                    (context, vm, _) => CustomPagination(
+                      total: vm.total,
+                      pageSize: vm.currentPageSize,
+                      size: 14,
+                      onChange: (page, size) => vm.goToPage(page, size),
+                      onPageSizeChange: (size) => vm.changePageSize(size),
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );

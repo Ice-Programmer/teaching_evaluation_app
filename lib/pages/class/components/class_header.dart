@@ -14,13 +14,14 @@ class ClassHeader extends StatefulWidget {
 }
 
 class _ClassHeaderState extends State<ClassHeader> {
+  String _searchText = "";
   @override
   Widget build(BuildContext context) {
     final vm = context.read<ClassDataViewModel>();
     return Row(
       children: [
-        _buildSearchField(),
-        40.horizontalSpace,
+        _buildSearchField(vm),
+        80.horizontalSpace,
         Expanded(
           flex: 1,
           child: Row(
@@ -37,13 +38,17 @@ class _ClassHeaderState extends State<ClassHeader> {
     );
   }
 
-  Widget _buildSearchField() {
+  Widget _buildSearchField(ClassDataViewModel vm) {
     return Expanded(
       flex: 4,
       child: CustomInput(
         height: 75.h,
         hintText: "请输入班级名称或班级编号",
-        prefixIcon: Icons.search,
+        suffixIcon: Icons.search,
+        onChanged: (value) => {setState(() {
+          _searchText = value;
+        })},
+        onSuffixTap: () => vm.search(_searchText),
       ),
     );
   }

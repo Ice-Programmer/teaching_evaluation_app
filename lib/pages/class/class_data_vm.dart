@@ -22,10 +22,14 @@ class ClassDataViewModel extends ChangeNotifier {
   int _total = 0;
   int get total => _total;
 
+  String _searchKeyword = '';
+  String get searchKeyword => _searchKeyword;
+
   final QueryStudentClassRequest _queryStudentClassRequest =
       QueryStudentClassRequest(
         pageNum: PageConst.defaultPageNum,
         pageSize: PageConst.defaultPageSize,
+        condition: QueryClassCondition(),
       );
 
   /// 获取课程列表（当前页）
@@ -35,6 +39,8 @@ class ClassDataViewModel extends ChangeNotifier {
     try {
       _queryStudentClassRequest.pageNum = _currentPageNum;
       _queryStudentClassRequest.pageSize = _currentPageSize;
+      _queryStudentClassRequest.condition!.classNumber =
+          _searchKeyword; // ← 加上搜索关键字
 
       final response = await _classService.queryStudentClassList(
         _queryStudentClassRequest,
@@ -51,9 +57,10 @@ class ClassDataViewModel extends ChangeNotifier {
   }
 
   /// 跳转到指定页
-  Future<void> goToPage(int pageNum) async {
+  Future<void> goToPage(int pageNum, int pageSize) async {
     if (pageNum < 1) return;
     _currentPageNum = pageNum;
+    _currentPageSize = pageSize;
     await fetchClassInfoList();
   }
 
@@ -61,6 +68,18 @@ class ClassDataViewModel extends ChangeNotifier {
   Future<void> changePageSize(int pageSize) async {
     _currentPageSize = pageSize;
     _currentPageNum = 1; // 回到第一页
+    await fetchClassInfoList();
+  }
+
+  /// 修改搜索框内容
+  void setSearchKeyword(String value) {
+    _searchKeyword = value;
+    notifyListeners();
+  }
+
+  Future<void> search(String searchText) async {
+    _searchKeyword = searchText;
+    _currentPageNum = 1; // 搜索回到第一页
     await fetchClassInfoList();
   }
 
