@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:teaching_evaluation_app/http/base_response.dart';
 import 'package:teaching_evaluation_app/http/business_exception.dart';
 import 'package:teaching_evaluation_app/utils/log_util.dart';
 import 'package:teaching_evaluation_app/utils/toast_util.dart';
@@ -12,8 +11,6 @@ class ResponseInterceptor extends Interceptor {
 
     if (data is Map && data.containsKey('BaseResp')) {
       LogUtils.println(data.toString());
-      BaseResp baseResp = BaseResp.fromJson(data['BaseResp']);
-      final message = baseResp.statusMessage;
       // // 判断业务状态码
       // if (baseResp.statusCode != HttpConstant.successCode) {
       //   ToastUtils.showErrorMsg(message);
